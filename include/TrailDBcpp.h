@@ -214,7 +214,7 @@ TrailDB::TrailDB(std::string dbpath):
   dbPath_(dbpath){
 
     db_ = tdb_init();
-    tdb_open(db_, dbPath_.c_str());
+    int ret = tdb_open(db_, dbPath_.c_str());
     numUUIDs_ = tdb_num_trails(db_);
     numFields_ = tdb_num_fields(db_);
     numEvents_ = tdb_num_events(db_);
@@ -267,7 +267,7 @@ uint64_t TrailDB::GetUUIDIdx(const uint8_t *uuid) {
     return uuid_id;
   }
   else { 
-    throw TrailDBException("Exception - UUID index does not exist");
+    throw TrailDBException();
   }
 };
 
@@ -276,7 +276,7 @@ uint32_t TrailDB::GetNumberOfEvents(uint64_t uuid_idx) {
   tdb_cursor* cursor = tdb_cursor_new(db_);
 
   if (tdb_get_trail(cursor, uuid_idx)) 
-    throw TrailDBException("Exception - Failed to locate events");
+    throw TrailDBException();
   uint32_t num_events = tdb_get_trail_length(cursor);
   tdb_cursor_free(cursor);
   return num_events;
@@ -304,9 +304,11 @@ EventListPtr TrailDB::LoadEvents(uint64_t uuid_idx) {
 
   tdb_cursor* cursor = tdb_cursor_new(db_);
 
-  if (tdb_get_trail(cursor, uuid_idx)) 
-    throw TrailDBException("Failed to locate events");
+  //TODO: Need better error handling
+  //if (tdb_get_trail(cursor, uuid_idx)) 
+  //  throw TrailDBException();
 
+  tdb_get_trail(cursor, uuid_idx);
   EventListPtr eventList = boost::make_shared<EventList>();
 
   tdb_event* tdbevent;
@@ -343,7 +345,7 @@ std::vector<uint32_t> TrailDB::GetTimestampVector(uint64_t uuid_idx) {
   tdb_cursor* cursor = tdb_cursor_new(db_);
 
   if (tdb_get_trail(cursor, uuid_idx)) 
-    throw TrailDBException("Exception: Failed to locate events");
+    throw TrailDBException();
 
   std::vector<uint32_t> vts;
 
@@ -365,7 +367,7 @@ uint32_t TrailDB::GetLexiconSize(std::string field) {
     return lex_size;
   }
   else {
-    throw TrailDBException("Exception: Field index does not exist");
+    throw TrailDBException();
   }
 }
 

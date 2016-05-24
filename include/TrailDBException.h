@@ -7,13 +7,10 @@
 
 class TrailDBException: public std::exception {
   public:
-    TrailDBException(const std::string msg = "TrailDB Exception occurred"):msg_(msg){}
-    const char* what() const throw() 
+    virtual const char* what() //const throw() 
     {
-      return msg_.c_str();
+      return "TrailDBcpp exception";
     }
-  private:
-    std::string msg_;
 };
 
 

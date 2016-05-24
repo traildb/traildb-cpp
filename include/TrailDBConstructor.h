@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <fstream>
 
+
+#include "TrailDBcpp.h"
 #include "TrailDBException.h"
 #include "ByteManipulations.h"
 #include "PointerTypedefs.h"
@@ -60,7 +62,7 @@ TrailDBConstructor::TrailDBConstructor(std::string path,
 
   if(tdb_cons_open(cons_, opath_.c_str(),
         cofield_names, ofields_.size())) {
-    throw TrailDBException("Exception - Can not initialize TrailDB Constructor");
+    throw TrailDBException();
   }
 };
 
@@ -72,7 +74,7 @@ TrailDBConstructor::~TrailDBConstructor() {
 void TrailDBConstructor::Finalize() {
   if(!finalized_) {
     if(tdb_cons_finalize(cons_)) {
-      throw TrailDBException("Exception - Could not finalize");
+      throw TrailDBException();
     }
     finalized_ = true;
   }
@@ -82,7 +84,7 @@ void TrailDBConstructor::Finalize() {
 
 void TrailDBConstructor::Append(TrailDB tdb) {
   if(tdb_cons_append(cons_, tdb.GetDB())) {
-    throw TrailDBException("Exception - Can not append in TrailDB Constructor");
+    throw TrailDBException();
   }
 }
 
@@ -109,7 +111,7 @@ void TrailDBConstructor::Add(const std::string hexuuid,
         timestamp,
         cvalues_entries,
         cval_len)) {
-    throw TrailDBException("Exception - Failed to add entry in TrailDB Constructor");
+    throw TrailDBException();
   }
 };
 

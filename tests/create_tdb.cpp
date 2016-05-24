@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "TrailDBConstructor.h"
-#include "TrailDB.h"
+#include "TrailDBcpp.h"
 
 using namespace std;
 
@@ -19,7 +19,7 @@ int main() {
   tdbCon.Add("12345678123456781234567812345678", 1600000, {"MacOSX","BRA"});
   tdbCon.Finalize();
 
-  TrailDB tdb("tdbtest");
+  TrailDB tdb("tdbtest.tdb");
 
   uint32_t num_events = tdb.GetNumberOfEvents();
 

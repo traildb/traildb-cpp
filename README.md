@@ -18,6 +18,11 @@ There is a test program that shows basic usage of the c++ API. To build it, simp
 
     $ make all
 
+(Optionally, you can install the header files to /usr/local/include to be used
+with traildb-r, e.g.)  
+
+    $ make install  #may need sudo
+
 Afterwards, you can run:
 
     $ create_tdb 

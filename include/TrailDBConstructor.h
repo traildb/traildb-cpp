@@ -18,7 +18,6 @@
 #include "TrailDBcpp.h"
 #include "TrailDBException.h"
 #include "ByteManipulations.h"
-#include "PointerTypedefs.h"
 
 extern "C" {
 #include <traildb.h>

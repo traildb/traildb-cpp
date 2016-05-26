@@ -13,10 +13,10 @@
 #include <string.h>
 #include <stdint.h>
 #include <fstream>
+#include <memory>
 
 #include "TrailDBException.h"
 #include "ByteManipulations.h"
-#include "PointerTypedefs.h"
 
 extern "C" {
 #include <traildb.h>
@@ -80,8 +80,6 @@ class Event {
 
 };
 
-SHARED_POINTER_TYPEDEFS(Event);
-
 class EventTypeMatch : public std::binary_function<Event, std::string, bool> {
   public:
     bool operator()(Event& e, const std::string type) const {
@@ -137,11 +135,7 @@ class EventList {
     std::vector<Event> events_;
 };
 
-SHARED_POINTER_TYPEDEFS(EventList);
-
 class TrailDB;
-SHARED_POINTER_TYPEDEFS(TrailDB);
-
 
 class TrailDB {
 
@@ -183,7 +177,7 @@ class TrailDB {
 
     std::string GetFieldName(uint32_t fieldIdx);
 
-    EventListPtr LoadEvents(uint64_t i);
+    std::shared_ptr<EventList> LoadEvents(uint64_t i);
 
     uint32_t GetNumberOfEvents(uint64_t uuid_index);
 
@@ -300,7 +294,7 @@ std::string TrailDB::GetFieldName(uint32_t fieldIdx) {
 
 
 //Given a cookie, load all corresponding events
-EventListPtr TrailDB::LoadEvents(uint64_t uuid_idx) {
+std::shared_ptr<EventList> TrailDB::LoadEvents(uint64_t uuid_idx) {
 
   tdb_cursor* cursor = tdb_cursor_new(db_);
 
@@ -309,7 +303,7 @@ EventListPtr TrailDB::LoadEvents(uint64_t uuid_idx) {
   //  throw TrailDBException();
 
   tdb_get_trail(cursor, uuid_idx);
-  EventListPtr eventList = boost::make_shared<EventList>();
+  auto eventList = std::make_shared<EventList>();
 
   tdb_event* tdbevent;
   while((tdbevent = (tdb_event*)tdb_cursor_next(cursor)) != NULL) {

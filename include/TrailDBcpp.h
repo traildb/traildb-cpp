@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <functional>
 #include <sstream>
-#include <string.h>
-#include <stdint.h>
+#include <string>
+#include <cstdint>
 #include <fstream>
 
 #include "TrailDBException.h"
@@ -22,22 +22,20 @@ extern "C" {
 #include <traildb.h>
 }
 
-static const uint32_t BUFFER_SIZE = 1000000;
-
-using namespace std;
+static const std::uint32_t BUFFER_SIZE = 1000000;
 
 
 class Event {
 
   public:
 
-    Event(uint32_t timestamp=0xFFFFFFFFULL):
+    Event(std::uint32_t timestamp=0xFFFFFFFFULL):
       timestamp_(timestamp) { }
 
     ~Event() { }
 
-    uint32_t GetTimestamp() const {return timestamp_;}
-    void SetTimestamp(const uint32_t timestamp) {timestamp_ = timestamp;}
+    std::uint32_t GetTimestamp() const {return timestamp_;}
+    void SetTimestamp(const std::uint32_t timestamp) {timestamp_ = timestamp;}
 
     void ResetTrail(std::string item) {
       trail_[item] = "";
@@ -75,7 +73,7 @@ class Event {
     bool operator>(const Event& e) const {return timestamp_ > e.timestamp_;}
 
   private:
-    uint32_t timestamp_;
+    std::uint32_t timestamp_;
     std::map<std::string, std::string> trail_;
 
 };
@@ -103,7 +101,7 @@ class EventList {
 
     void AddEvent(const Event& e) {events_.push_back(e);}
 
-    uint32_t GetSize() const {return (uint32_t)events_.size();}
+    std::uint32_t GetSize() const {return (std::uint32_t)events_.size();}
 
     void Clear() {events_.clear();}
 
@@ -126,8 +124,8 @@ class EventList {
     }
 
 
-    uint32_t GetCountEventType(std::string type) {
-      uint32_t count = (uint32_t)count_if(EventsBegin(), EventsEnd(),
+    std::uint32_t GetCountEventType(std::string type) {
+      std::uint32_t count = (std::uint32_t)count_if(EventsBegin(), EventsEnd(),
           bind2nd(EventTypeMatch(),type));
       return count;
     }
@@ -153,15 +151,15 @@ class TrailDB {
 
     void LoadFieldNames();
 
-    uint64_t GetNumberOfUUIDs() const { return numUUIDs_; }
+    std::uint64_t GetNumberOfUUIDs() const { return numUUIDs_; }
 
-    uint64_t GetNumberOfEvents() const { return numEvents_; }
+    std::uint64_t GetNumberOfEvents() const { return numEvents_; }
 
-    uint32_t GetMaxTimestamp() const { return maxTimestamp_; }
+    std::uint32_t GetMaxTimestamp() const { return maxTimestamp_; }
 
-    uint32_t GetMinTimestamp() const { return minTimestamp_; }
+    std::uint32_t GetMinTimestamp() const { return minTimestamp_; }
 
-    uint32_t GetNumberOfFields() const { return numFields_; }
+    std::uint32_t GetNumberOfFields() const { return numFields_; }
 
     tdb* GetDB() const {return db_;}
 
@@ -169,41 +167,41 @@ class TrailDB {
       return fieldNames_;
     }
 
-    void GetUUIDByIdx(uint64_t ind, std::vector<uint8_t> &res);
+    void GetUUIDByIdx(std::uint64_t ind, std::vector<std::uint8_t> &res);
 
-    uint64_t GetUUIDIdx(const uint8_t * uuid_id);
+    std::uint64_t GetUUIDIdx(const std::uint8_t * uuid_id);
 
-    const std::string GetHexUUIDByInd(uint64_t ind);
+    const std::string GetHexUUIDByInd(std::uint64_t ind);
 
-    uint32_t GetLexiconSize(std::string field);
+    std::uint32_t GetLexiconSize(std::string field);
 
-    uint32_t GetFieldSize(std::string field);
+    std::uint32_t GetFieldSize(std::string field);
 
-    bool GetFieldIdx(std::string field, uint32_t &id);
+    bool GetFieldIdx(std::string field, std::uint32_t &id);
 
-    std::string GetFieldName(uint32_t fieldIdx);
+    std::string GetFieldName(std::uint32_t fieldIdx);
 
-    EventListPtr LoadEvents(uint64_t i);
+    EventListPtr LoadEvents(std::uint64_t i);
 
-    uint32_t GetNumberOfEvents(uint64_t uuid_index);
+    std::uint32_t GetNumberOfEvents(std::uint64_t uuid_index);
 
-    std::vector<uint32_t> GetTimestampVector(uint64_t uuid_index);
+    std::vector<std::uint32_t> GetTimestampVector(std::uint64_t uuid_index);
 
 
   //private:
 
     std::string dbPath_;
     tdb* db_;
-    uint64_t numUUIDs_;
-    uint64_t numEvents_;
-    uint32_t numFields_;
-    uint32_t minTimestamp_;
-    uint32_t maxTimestamp_;
-    uint32_t eventTypeInd_;
+    std::uint64_t numUUIDs_;
+    std::uint64_t numEvents_;
+    std::uint32_t numFields_;
+    std::uint32_t minTimestamp_;
+    std::uint32_t maxTimestamp_;
+    std::uint32_t eventTypeInd_;
 
     std::vector<std::string> fieldNames_;
 
-    uint32_t buff_[BUFFER_SIZE];
+    std::uint32_t buff_[BUFFER_SIZE];
     char res_[BUFFER_SIZE];
 
     static const unsigned TDB_KEY_SIZE_BYTES = 16;
@@ -230,13 +228,13 @@ TrailDB::~TrailDB() {
 };
 
 //Return vector of 16 bytes for uuid id
-void TrailDB::GetUUIDByIdx(uint64_t ind, std::vector<uint8_t> &res) {
-  const uint8_t *p_uuid = (uint8_t *)tdb_get_uuid(db_, ind);
+void TrailDB::GetUUIDByIdx(std::uint64_t ind, std::vector<std::uint8_t> &res) {
+  const std::uint8_t *p_uuid = (std::uint8_t *)tdb_get_uuid(db_, ind);
   res.clear();
   res.resize(0);
   if (p_uuid != NULL) {
     for (int i = 0; i < TDB_KEY_SIZE_BYTES; ++i) {
-      uint8_t uuid_byte;
+      std::uint8_t uuid_byte;
       p_uuid = ParseValue(&(*p_uuid), uuid_byte, 1);
       res.push_back(uuid_byte);
     }
@@ -246,8 +244,8 @@ void TrailDB::GetUUIDByIdx(uint64_t ind, std::vector<uint8_t> &res) {
 
 
 //Return the Hex representation of the UUID in a string
-const std::string TrailDB:: GetHexUUIDByInd(uint64_t ind) {
-  std::vector<uint8_t> res;
+const std::string TrailDB:: GetHexUUIDByInd(std::uint64_t ind) {
+  std::vector<std::uint8_t> res;
   GetUUIDByIdx(ind,res);
   std::stringstream ss;
   if (res.size() == TDB_KEY_SIZE_BYTES) {
@@ -260,8 +258,8 @@ const std::string TrailDB:: GetHexUUIDByInd(uint64_t ind) {
 };
 
 //Given uuid key (16 bytes) return corresponding index
-uint64_t TrailDB::GetUUIDIdx(const uint8_t *uuid) {
-  uint64_t uuid_id;
+std::uint64_t TrailDB::GetUUIDIdx(const std::uint8_t *uuid) {
+  std::uint64_t uuid_id;
   tdb_get_trail_id(db_, uuid, &uuid_id);
   if (uuid_id < numUUIDs_) {
     return uuid_id;
@@ -272,35 +270,35 @@ uint64_t TrailDB::GetUUIDIdx(const uint8_t *uuid) {
 };
 
 //Given an index, return the number of events
-uint32_t TrailDB::GetNumberOfEvents(uint64_t uuid_idx) {
+std::uint32_t TrailDB::GetNumberOfEvents(std::uint64_t uuid_idx) {
   tdb_cursor* cursor = tdb_cursor_new(db_);
 
   if (tdb_get_trail(cursor, uuid_idx)) 
     throw TrailDBException();
-  uint32_t num_events = tdb_get_trail_length(cursor);
+  std::uint32_t num_events = tdb_get_trail_length(cursor);
   tdb_cursor_free(cursor);
   return num_events;
 };
 
 
-uint32_t TrailDB::GetFieldSize(std::string field) {
-  uint32_t res = 0;
-  uint32_t pos;
+std::uint32_t TrailDB::GetFieldSize(std::string field) {
+  std::uint32_t res = 0;
+  std::uint32_t pos;
   if(GetFieldIdx(field, pos)) {
-    res = tdb_lexicon_size(db_, (uint8_t)pos) - 1;
+    res = tdb_lexicon_size(db_, (std::uint8_t)pos) - 1;
   }
   return res;
 };
 
 
-std::string TrailDB::GetFieldName(uint32_t fieldIdx) {
+std::string TrailDB::GetFieldName(std::uint32_t fieldIdx) {
   std::string res(tdb_get_field_name(db_, fieldIdx));
   return res;
 }
 
 
 //Given a cookie, load all corresponding events
-EventListPtr TrailDB::LoadEvents(uint64_t uuid_idx) {
+EventListPtr TrailDB::LoadEvents(std::uint64_t uuid_idx) {
 
   tdb_cursor* cursor = tdb_cursor_new(db_);
 
@@ -316,11 +314,11 @@ EventListPtr TrailDB::LoadEvents(uint64_t uuid_idx) {
     Event e;
     e.SetTimestamp(tdbevent->timestamp);
 
-    uint64_t num_items = tdbevent->num_items;
+    std::uint64_t num_items = tdbevent->num_items;
     size_t count = 0;
     while (count < num_items) {
 
-      uint64_t vlength;
+      std::uint64_t vlength;
       auto val = tdb_get_item_value(db_, tdbevent->items[count], &vlength);
       auto fieldname = GetFieldName(tdb_item_field(tdbevent->items[count]));
 
@@ -340,14 +338,14 @@ EventListPtr TrailDB::LoadEvents(uint64_t uuid_idx) {
 };
 
 
-std::vector<uint32_t> TrailDB::GetTimestampVector(uint64_t uuid_idx) {
+std::vector<std::uint32_t> TrailDB::GetTimestampVector(std::uint64_t uuid_idx) {
 
   tdb_cursor* cursor = tdb_cursor_new(db_);
 
   if (tdb_get_trail(cursor, uuid_idx)) 
     throw TrailDBException();
 
-  std::vector<uint32_t> vts;
+  std::vector<std::uint32_t> vts;
 
   tdb_event* tdbevent;
   while((tdbevent = (tdb_event*)tdb_cursor_next(cursor)) != NULL) {
@@ -360,10 +358,10 @@ std::vector<uint32_t> TrailDB::GetTimestampVector(uint64_t uuid_idx) {
 }
 
 
-uint32_t TrailDB::GetLexiconSize(std::string field) {
-  uint32_t field_id;
+std::uint32_t TrailDB::GetLexiconSize(std::string field) {
+  std::uint32_t field_id;
   if (GetFieldIdx(field, field_id)) {
-    uint32_t lex_size = tdb_lexicon_size(db_, field_id);
+    std::uint32_t lex_size = tdb_lexicon_size(db_, field_id);
     return lex_size;
   }
   else {
@@ -372,11 +370,11 @@ uint32_t TrailDB::GetLexiconSize(std::string field) {
 }
 
 //Given field (a string), return corresponding idx
-bool TrailDB::GetFieldIdx(std::string field, uint32_t &id) {
+bool TrailDB::GetFieldIdx(std::string field, std::uint32_t &id) {
   auto it = std::find(fieldNames_.begin(), fieldNames_.end(), field);
   if (it != fieldNames_.end()) {
     auto f_pos = std::distance(fieldNames_.begin(), it);
-    id = (uint32_t)f_pos; 
+    id = (std::uint32_t)f_pos; 
     return true;
   }
   return false;

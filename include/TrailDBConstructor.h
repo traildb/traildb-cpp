@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <functional>
 #include <sstream>
-#include <string.h>
-#include <stdint.h>
+#include <string>
+#include <cstdint>
 #include <fstream>
 
 
@@ -32,8 +32,8 @@ public:
   ~TrailDBConstructor();
   void Finalize();
   void Append(TrailDB tdb);
-  void Add(std::string cookie, uint64_t timestamp, const vector<std::string>& values);
-  void RawCookie(std::string cookie, uint8_t res[16]);
+  void Add(std::string cookie, std::uint64_t timestamp, const std::vector<std::string>& values);
+  void RawCookie(std::string cookie, std::uint8_t res[16]);
 
 private:
 
@@ -41,7 +41,7 @@ private:
 
   bool finalized_;
   std::string opath_;
-  std::vector<string> ofields_;
+  std::vector<std::string> ofields_;
   static const unsigned TDB_KEY_SIZE_BYTES = 16;
 };
 
@@ -90,21 +90,21 @@ void TrailDBConstructor::Append(TrailDB tdb) {
 
 
 void TrailDBConstructor::Add(const std::string hexuuid, 
-                             const uint64_t timestamp, 
-                             const vector<std::string>& values) {
+                             const std::uint64_t timestamp, 
+                             const std::vector<std::string>& values) {
 
-  uint8_t uuid[16];
-  const uint8_t* hex_str = reinterpret_cast<const uint8_t*>(hexuuid.c_str());
+  std::uint8_t uuid[16];
+  const std::uint8_t* hex_str = reinterpret_cast<const std::uint8_t*>(hexuuid.c_str());
   tdb_uuid_raw(hex_str, uuid);
 
   std::vector<const char*> val_entries;
-  vector <uint64_t> val_len;
+  std::vector <std::uint64_t> val_len;
   for(auto& s: values) {
     val_entries.push_back(&s.front());
     val_len.push_back(s.size());
   }
   const char **cvalues_entries = &val_entries.front();
-  const uint64_t* cval_len = &val_len.front();
+  const std::uint64_t* cval_len = &val_len.front();
 
   if(tdb_cons_add(cons_,
         uuid, 

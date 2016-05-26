@@ -10,15 +10,14 @@
 */
 
 #include <algorithm>
-#include <stdint.h>
-
+#include <cstdint>
 #include <iostream>
 #include <iomanip>
 
 template <typename T>
-const uint8_t* ParseValue(const uint8_t* start, T& data, size_t size) {
-  const uint8_t* end = start + size;
-  std::copy(start, end, reinterpret_cast<uint8_t*>(&data));
+const std::uint8_t* ParseValue(const std::uint8_t* start, T& data, size_t size) {
+  const std::uint8_t* end = start + size;
+  std::copy(start, end, reinterpret_cast<std::uint8_t*>(&data));
   return end;
 }
 

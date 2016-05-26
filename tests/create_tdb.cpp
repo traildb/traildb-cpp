@@ -25,7 +25,7 @@ int main() {
 
   for(uint32_t num = 0; num < num_events; ++num) {
 
-    EventListPtr eventList = tdb.LoadEvents(num);
+      std::shared_ptr<EventList> eventList = tdb.LoadEvents(num);
     EventList::EventIterator evtIter;
 
     uint32_t evtSize = eventList->GetSize();
